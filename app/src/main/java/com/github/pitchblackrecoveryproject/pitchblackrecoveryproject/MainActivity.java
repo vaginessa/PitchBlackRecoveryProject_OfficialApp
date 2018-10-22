@@ -44,12 +44,17 @@ public class MainActivity extends AppCompatActivity {
             Log.i("PBRP", "Done");*/
 
             // Copy default.prop/prop.default to PBRP
-            Log.i("PBRP", "Staring to write");
             os.writeBytes("cp /prop.default " + path + "/build.info\n");
             os.writeBytes("cp /default.prop " + path + "/build.info\n");
-            Log.i("PBRP", "Done writing");
 
-            // Check if file copied successfully
+            // Check if file successfully copied
+            File checkFile = new File(path + "/build.info");
+            if(!pbrp.exists()) {
+                Log.e("PBRP", "Failed to copy build.info file to PBRP folder");
+                message.setText("Failed to copy build.info file to PBRP folder");
+            } else {
+                message.setText("build.info copied to PBRP folder");
+            }
 
             // Close the terminal
             os.writeBytes("exit\n");
@@ -58,19 +63,19 @@ public class MainActivity extends AppCompatActivity {
                 p.waitFor();
                 if (p.exitValue() != 255) {
                     // TODO Code to run on success
-                    message.setText("root");
+                    
                 }
                 else {
                     // TODO Code to run on unsuccessful
-                    message.setText("not root");
+                    message.setText("Device not rooted.");
                 }
             } catch (InterruptedException e) {
                 // TODO Code to run in interrupted exception
-                message.setText("not root");
+                message.setText("Device not rooted.");
             }
         } catch (IOException e) {
             // TODO Code to run in input/output exception
-            message.setText("not root");
+            message.setText("Device not rooted.");
         }
     }
 }
