@@ -36,28 +36,33 @@ public class MainActivity extends AppCompatActivity {
     final static String path = Environment.getExternalStorageDirectory() + File.separator + "PBRP";
     final static String buildFile = "pbrp.info";
     String pbReleases = "";
+    int root = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if(getRootAccess((TextView) findViewById(R.id.info), new File(path + "/" + buildFile)) == 1)
+        init();
+    }
+
+    protected void init() {
         try {
             // Create a URL for the desired page
             URL url = new URL("https://raw.githubusercontent.com/PitchBlackRecoveryProject/vendor_pb/pb/pb.releases");
-
             // launch task
             new ReadTextTask().execute(url);
         }
         catch (MalformedURLException e) {
             Log.e("PBRP", "ERROR CHECK LINE 56");
         }
-
     }
 
     protected void logic() {
         // Logic starts here
         TextView message = (TextView) findViewById(R.id.info);
+        message.setText(getString(R.string.info));
         File pbrpInfo = new File(path + "/" + buildFile);
 
         int root = getRootAccess(message, pbrpInfo);
@@ -225,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void onFailed(TextView message) {
         message.setText("Failed to check for updates.");
-
     }
 
     private void onUnOfficial(TextView message) {
