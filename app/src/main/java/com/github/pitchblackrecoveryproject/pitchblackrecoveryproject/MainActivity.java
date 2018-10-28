@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void init() {
         try {
+            setMessage(getString(R.string.info));
             // Create a URL for the desired page
             URL url = new URL("https://raw.githubusercontent.com/PitchBlackRecoveryProject/vendor_pb/pb/pb.releases");
             // launch task
@@ -90,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(URL... urls) {
             try {
-                setMessage(getString(R.string.info));
                 // Read all the text returned by the server
                 BufferedReader in = new BufferedReader(new InputStreamReader(urls[0].openStream()));
                 pbReleases = "";
