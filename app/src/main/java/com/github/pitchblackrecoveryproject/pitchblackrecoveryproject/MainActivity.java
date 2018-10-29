@@ -87,9 +87,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class ReadTextTask extends AsyncTask<URL, Void, String> {
+    private class ReadTextTask extends AsyncTask<URL, Void, Integer> {
         @Override
-        protected String doInBackground(URL... urls) {
+        protected Integer doInBackground(URL... urls) {
             try {
                 // Read all the text returned by the server
                 BufferedReader in = new BufferedReader(new InputStreamReader(urls[0].openStream()));
@@ -101,15 +101,20 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("PBRELEASES:", pbReleases);
                 }
 
-            } catch (IOException e) {
+            } catch (Exception e) {
+                setMessage("Failed to connect to the server,\nCheck your internet connection and try again");
+                Log.e("PBRP", "FAILED TO CONNECT TO SERVER");
                 e.printStackTrace();
+                return 0;
             }
-            return "Downloaded pb.releases";
+            return 1;
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            logic();
+        protected void onPostExecute(Integer result) {
+            if(result == 1) {
+                logic();
+            }
         }
     }
 
