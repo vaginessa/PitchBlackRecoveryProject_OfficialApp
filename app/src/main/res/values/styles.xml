@@ -11,6 +11,16 @@
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
     </style>
 
 </resources>
