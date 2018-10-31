@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:theme="@style/AppTheme.NoActionBar"
+    android:theme="@style/PB.Light"
     android:weightSum="5.5"
     tools:context=".MainActivity">
 

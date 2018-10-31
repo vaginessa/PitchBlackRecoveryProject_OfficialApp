@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">PitchBlack Recovery Project</string>
+    <string name="app_name_short">PBRP</string>
     <string name="info">Checking For Updates...</string>
     <string name="action_settings">Settings</string>
 </resources>
