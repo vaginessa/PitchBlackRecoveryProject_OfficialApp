@@ -61,7 +61,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="89" />
+                                                <entry key="scalingPercent" value="60" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -73,8 +73,9 @@
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
                                       <entry key="backgroundColor" value="1b1b1b" />
-                                      <entry key="foregroundImage" value="D:\PBRP\PitchBlackRecoveryProject.github.io\images\PBRP_icon.png" />
+                                      <entry key="foregroundImage" value="C:\Users\manjo\Desktop\Temp\pbnew34.png" />
                                       <entry key="outputName" value="pb_logo" />
+                                      <entry key="previewDensity" value="XXXHIGH" />
                                       <entry key="showGrid" value="true" />
                                     </map>
                                   </option>
