@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     final static String buildFile = "pbrp.info";
     String pbReleases = "";
     int root = -1;
+    String update_build = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
-    protected static int checkUpdate(String[] input, String src) throws ParseException, IOException {
+    protected int checkUpdate(String[] input, String src) throws ParseException, IOException {
 
         JSONParser parser = new JSONParser();
         Reader reader = null;
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 return 1;
             } else {
                 // Update available
+                this.update_build = release.get(input[0]).toString();
                 return 0;
             }
 
@@ -180,15 +182,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onUnOfficial(TextView message) {
-        message.setText("Your device is UnOfficial. Keep your hands off this app!");
+        message.setText("Your device is Unofficial. Keep your hands off this app!");
     }
 
     private void onUpdateAvailable(TextView message) {
-        message.setText("New Update is available for your device.");
+        message.setText("New Update is available for your device.\nPBRP " + R.string.latest_pbrp + " " + update_build);
     }
 
     private void onUpdated(TextView message) {
-        message.setText("Congrats! Your device is Up to Date.");
+        message.setText("Congrats! Your device is up-to-date.");
     }
 
     private void setMessage(String msg) {
