@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     String pbReleases = "";
     int root = -1;
     String update_build = "";
+    String latest_pbrp = "2.9.0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onUpdateAvailable(TextView message) {
-        message.setText("New Update is available for your device.\nPBRP " + R.string.latest_pbrp + " " + update_build);
+        message.setText("New Update is available for your device.\nPBRP " + latest_pbrp + " " + update_build);
     }
 
     private void onUpdated(TextView message) {
