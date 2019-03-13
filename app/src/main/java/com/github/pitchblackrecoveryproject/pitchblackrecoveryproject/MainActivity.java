@@ -63,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else
                 requestStoragePermission();
-
-            init();
+            per=true;
         }
         catch (IOException e){Toast toast = Toast.makeText(getApplicationContext(), "Not Rooted", Toast.LENGTH_SHORT);
             toast.setMargin(50, 50);
