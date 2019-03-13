@@ -1,12 +1,12 @@
 package com.github.pitchblackrecoveryproject.pitchblackrecoveryproject;
 
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Environment;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,8 +27,12 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.widget.Toast;
+import android.Manifest;
+import android.support.v4.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
+    private int STORAGE_PERMISSION_CODE = 1;
     final static String path = Environment.getExternalStorageDirectory() + File.separator + "PBRP";
     final static String buildFile = "pbrp.info";
     String pbReleases = "";
@@ -40,15 +44,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        final Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View e) {
-                init();
+        boolean per=true;
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            requestStoragePermission();
+        try {
+            Runtime.getRuntime().exec("su");
+            while(per)
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                per=false;
+                final Button button = findViewById(R.id.button);
+                button.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View e) {
+                        init();
+                    }
+                });
             }
-        });
+            else
+                requestStoragePermission();
 
-        init();
+            init();
+        }
+        catch (IOException e){Toast toast = Toast.makeText(getApplicationContext(), "Not Rooted", Toast.LENGTH_SHORT);
+            toast.setMargin(50, 50);
+            toast.show();}
     }
 
     protected void init() {
@@ -197,5 +217,10 @@ public class MainActivity extends AppCompatActivity {
     private void setMessage(String msg) {
         TextView message = (TextView) findViewById(R.id.info);
         message.setText(msg);
+    }
+
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
     }
 }
