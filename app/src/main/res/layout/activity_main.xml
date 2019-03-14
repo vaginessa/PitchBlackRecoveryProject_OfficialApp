@@ -40,7 +40,7 @@
             android:layout_width="163dp"
             android:layout_height="67dp"
             android:gravity="center"
-            android:text="@string/info"
+            android:text="Welcome To PitchBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
