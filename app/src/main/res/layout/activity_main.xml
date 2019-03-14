@@ -19,7 +19,7 @@
             android:id="@+id/imageView4"
             android:layout_width="147dp"
             android:layout_height="182dp"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/info"
             android:paddingTop="2dip"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,10 +37,10 @@
 
         <TextView
             android:id="@+id/info"
-            android:layout_width="163dp"
+            android:layout_width="183dp"
             android:layout_height="67dp"
             android:gravity="center"
-            android:text="Welcome To PitchBlack"
+            android:text="@string/wlcm_msg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -57,7 +57,7 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Check For Updates" />
+            android:text="@string/button_name" />
     </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>
