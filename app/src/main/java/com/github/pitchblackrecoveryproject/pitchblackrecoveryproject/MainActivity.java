@@ -45,28 +45,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         boolean per=true;
+        final Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View e) {
+                init();
+            }
+        });
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             requestStoragePermission();
         try {
             Runtime.getRuntime().exec("su");
             while(per)
-            if (ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                per=false;
-                final Button button = findViewById(R.id.button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View e) {
-                        init();
-                    }
-                });
+            {
+                if (ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    per=false;
+                }
+                else {
+                    requestStoragePermission();
+                    per = true;
+                }
             }
-            else
-                requestStoragePermission();
-            per=true;
         }
-        catch (IOException e){Toast toast = Toast.makeText(getApplicationContext(), "Not Rooted", Toast.LENGTH_SHORT);
-            toast.setMargin(50, 50);
+        catch (IOException e){Toast toast = Toast.makeText(getApplicationContext(), "PBRP: Update Features will not work \n Reason: Non Rooted", Toast.LENGTH_SHORT);
+            //toast.setMargin(50, 50);
+            Log.e("PBRP: ", "Root not Found");
             toast.show();}
     }
 
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             new ReadTextTask().execute(url);
         }
         catch (MalformedURLException e) {
-            Log.e("PBRP", "ERROR MalformedURL Exception");
+            Log.e("PBRP: ", "ERROR MalformedURL Exception");
             e.printStackTrace();
         }
     }
@@ -124,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 setMessage("Failed to connect to the server,\nCheck your internet connection and try again");
-                Log.e("PBRP", "FAILED TO CONNECT TO SERVER");
+                Log.e("PBRP: ", "FAILED TO CONNECT TO SERVER");
                 e.printStackTrace();
                 return 0;
             }
@@ -166,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             result[0] = matchPtn.group(2);
         }
 
-        Log.i("PBRP", Arrays.toString(result));
+        Log.i("PBRP: ", Arrays.toString(result));
 
         return result;
     }
@@ -176,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         JSONParser parser = new JSONParser();
         Reader reader = null;
 
-        Log.i("PBRP", src);
+        Log.i("PBRP: ", src);
         Object jsonObj = parser.parse(src);
 
         JSONObject release = (JSONObject) jsonObj;
@@ -186,9 +190,21 @@ public class MainActivity extends AppCompatActivity {
                 // Up to Date
                 return 1;
             } else {
-                // Update available
-                this.update_build = release.get(input[0]).toString();
-                return 0;
+                int mon[]=new int[2], date[]=new int[2], yr[]=new int[2];
+                yr[0]=Integer.parseInt(input[1].substring(0,4));
+                mon[0]=Integer.parseInt(input[1].substring(4,6));
+                date[0]=Integer.parseInt(input[1].substring(6));
+                yr[1]=Integer.parseInt(release.get(input[0]).toString().substring(0,4));
+                mon[1]=Integer.parseInt(release.get(input[0]).toString().substring(4,6));
+                date[1]=Integer.parseInt(release.get(input[0]).toString().substring(6));
+                if(yr[1]>=yr[0])
+                    if(mon[1]>=mon[0])
+                        if(date[1]>date[0] || mon[1]>mon[0] || yr[1]>yr[0]) {
+                            // Update available
+                            this.update_build = release.get(input[0]).toString();
+                            return 0;
+                        }
+                return 1;
             }
 
         } else {
