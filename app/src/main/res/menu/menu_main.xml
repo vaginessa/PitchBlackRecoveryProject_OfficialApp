@@ -1,10 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.github.pitchblackrecoveryproject.pitchblackrecoveryproject.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+    tools:showIn="navigation_view">
+    <item android:title="@string/off">
+        <menu>
+            <item
+                android:id="@+id/xiaomi"
+                android:icon="@drawable/ic_phone_support"
+                android:title="@string/xiaomi" />
+            <item
+                android:id="@+id/lyf"
+                android:icon="@drawable/ic_phone_support"
+                android:title="@string/lyf" />
+        </menu>
+    </item>
 </menu>

@@ -3,6 +3,9 @@ package com.github.pitchblackrecoveryproject.pitchblackrecoveryproject;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Environment;
 
@@ -14,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,6 +36,11 @@ import android.Manifest;
 import android.support.v4.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DrawerLayout dl;
+    private ActionBarDrawerToggle t;
+    private NavigationView nv;
+
     private int STORAGE_PERMISSION_CODE = 1;
     final static String path = Environment.getExternalStorageDirectory() + File.separator + "PBRP";
     final static String buildFile = "pbrp.info";
@@ -39,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
     int root = -1;
     String update_build = "";
     String latest_pbrp = "2.9.0";
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -222,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onUpdateAvailable(TextView message) {
-        message.setText("New Update is available for your device.\nPBRP " + latest_pbrp + " " + update_build);
+        message.setText("New Update is available for your device.\n PBRP " + latest_pbrp + " " + update_build);
     }
 
     private void onUpdated(TextView message) {
