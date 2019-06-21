@@ -33,9 +33,12 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import android.widget.Toast;
 import android.Manifest;
 import android.support.v4.app.ActivityCompat;
+
+import com.stericson.RootShell.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        boolean per=true;
+        //Toggle
         dl = findViewById(R.id.dl);
         ImageView navToggle = findViewById(R.id.navToggle);
         navToggle.setOnClickListener(new View.OnClickListener() {
@@ -69,34 +72,30 @@ public class MainActivity extends AppCompatActivity {
                 dl.openDrawer(GravityCompat.START);
             }
         });
-
+        //Checkout
         final Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View e) {
                 init();
             }
         });
+        //Permissions
+        requestStoragePermission();
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            requestStoragePermission();
-        try {
-            Runtime.getRuntime().exec("su");
-            while(per)
-            {
-                if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    per=false;
-                }
-                else {
-                    requestStoragePermission();
-                    per = true;
-                }
-            }
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            Toast toast = Toast.makeText(getApplicationContext(), "PBRP: Storage Permission Denied", Toast.LENGTH_SHORT);
+            toast.show();
         }
-        catch (IOException e){Toast toast = Toast.makeText(getApplicationContext(), "PBRP: Update Features will not work \n Reason: Non Rooted", Toast.LENGTH_SHORT);
-            //toast.setMargin(50, 50);
+        if (!RootShell.isRootAvailable()) {
+            Toast toast = Toast.makeText(getApplicationContext(), "PBRP: Update Features will not work \n Reason: Non Rooted", Toast.LENGTH_SHORT);
             Log.e("PBRP: ", "Root not Found");
-            toast.show();}
+            toast.show();
+        }
+        if (!RootShell.isAccessGiven()) {
+            Toast toast = Toast.makeText(getApplicationContext(), "PBRP: Root not Granted", Toast.LENGTH_SHORT);
+            Log.e("PBRP: ", "Root not Granted");
+            toast.show();
+        }
     }
 
     protected void init() {
@@ -106,8 +105,7 @@ public class MainActivity extends AppCompatActivity {
             URL url = new URL("https://raw.githubusercontent.com/PitchBlackRecoveryProject/vendor_pb/pb/pb.releases");
             // launch task
             new ReadTextTask().execute(url);
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             Log.e("PBRP: ", "ERROR MalformedURL Exception");
             e.printStackTrace();
         }
@@ -129,11 +127,19 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        switch(result) {
-            case -2 : onFailed(message); break;
-            case -1 : onUnOfficial(message); break;
-            case 0 : onUpdateAvailable(message); break;
-            case 1 : onUpdated(message); break;
+        switch (result) {
+            case -2:
+                onFailed(message);
+                break;
+            case -1:
+                onUnOfficial(message);
+                break;
+            case 0:
+                onUpdateAvailable(message);
+                break;
+            case 1:
+                onUpdated(message);
+                break;
         }
     }
 
@@ -162,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Integer result) {
-            if(result == 1) {
+            if (result == 1) {
                 logic();
             }
         }
@@ -182,15 +188,14 @@ public class MainActivity extends AppCompatActivity {
                 text.append('\n');
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         Pattern ptn = Pattern.compile("[^\\n\\t-]+-(\\d+)-([^\\n\\t-]+)");
         Matcher matchPtn = ptn.matcher(text);
 
-        if(matchPtn.find()) {
+        if (matchPtn.find()) {
             result[1] = matchPtn.group(1);
             result[0] = matchPtn.group(2);
         }
@@ -210,21 +215,21 @@ public class MainActivity extends AppCompatActivity {
 
         JSONObject release = (JSONObject) jsonObj;
 
-        if(release.containsKey(input[0])) {
-            if(release.get(input[0]).equals(input[1])) {
+        if (release.containsKey(input[0])) {
+            if (release.get(input[0]).equals(input[1])) {
                 // Up to Date
                 return 1;
             } else {
-                int mon[]=new int[2], date[]=new int[2], yr[]=new int[2];
-                yr[0]=Integer.parseInt(input[1].substring(0,4));
-                mon[0]=Integer.parseInt(input[1].substring(4,6));
-                date[0]=Integer.parseInt(input[1].substring(6));
-                yr[1]=Integer.parseInt(release.get(input[0]).toString().substring(0,4));
-                mon[1]=Integer.parseInt(release.get(input[0]).toString().substring(4,6));
-                date[1]=Integer.parseInt(release.get(input[0]).toString().substring(6));
-                if(yr[1]>=yr[0])
-                    if(mon[1]>=mon[0])
-                        if(date[1]>date[0] || mon[1]>mon[0] || yr[1]>yr[0]) {
+                int mon[] = new int[2], date[] = new int[2], yr[] = new int[2];
+                yr[0] = Integer.parseInt(input[1].substring(0, 4));
+                mon[0] = Integer.parseInt(input[1].substring(4, 6));
+                date[0] = Integer.parseInt(input[1].substring(6));
+                yr[1] = Integer.parseInt(release.get(input[0]).toString().substring(0, 4));
+                mon[1] = Integer.parseInt(release.get(input[0]).toString().substring(4, 6));
+                date[1] = Integer.parseInt(release.get(input[0]).toString().substring(6));
+                if (yr[1] >= yr[0])
+                    if (mon[1] >= mon[0])
+                        if (date[1] > date[0] || mon[1] > mon[0] || yr[1] > yr[0]) {
                             // Update available
                             this.update_build = release.get(input[0]).toString();
                             return 0;
