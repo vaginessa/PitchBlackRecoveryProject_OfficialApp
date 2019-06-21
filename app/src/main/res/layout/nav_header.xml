@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="150dp"
     android:background="@color/colorgray"
-    android:gravity="center">
+    android:gravity="bottom|center">
 
     <ImageView
         android:layout_width="match_parent"
