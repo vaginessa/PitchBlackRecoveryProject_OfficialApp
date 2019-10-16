@@ -254,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
         Updater.setTitle("Initializing Update");
         Updater.setMessage("Preparing to update...\nPlease wait...");
         Updater.show();
+        boolean recovery_flashable = false;
 
         if (unpackZip(path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/", newUpdateBuildDate + "-" + newUpdateBuildTime + ".zip") && installPBRP()) {
             Updater.dismiss();
@@ -266,7 +267,18 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (sudo("dd if=" + path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/TWRP/recovery.img of=/dev/block/bootdevice/by-name/recovery")) {
+                    if (!(sudo("dd if=/dev/block/bootdevice/by-name/recovery of=" + path + "/recovery-backup.img"))) {
+                        builder2.setTitle("Failed to Backup current Recovery Image");
+                        builder2.setMessage("Issue encountered while backing up current image");
+                        builder2.setCancelable(true);
+                        builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                           @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                recovery_flashable = true;
+                            }
+                        }
+                    }
+                    if (recovery_flashable && sudo("dd if=" + path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/TWRP/recovery.img of=/dev/block/bootdevice/by-name/recovery")) {
                         builder2.setTitle("Updated Successfully");
                         builder2.setMessage("PBRP succussfully updated. Do you want to reboot to recovery now?");
                         builder2.setCancelable(false);
