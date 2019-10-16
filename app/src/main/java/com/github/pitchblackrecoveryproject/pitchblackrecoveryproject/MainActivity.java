@@ -254,12 +254,12 @@ public class MainActivity extends AppCompatActivity {
         Updater.setTitle("Initializing Update");
         Updater.setMessage("Preparing to update...\nPlease wait...");
         Updater.show();
-        boolean recovery_flashable = false;
 
-        if (unpackZip(path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/", newUpdateBuildDate + "-" + newUpdateBuildTime + ".zip") && installPBRP()) {
+        if (unpackZip(path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/", newUpdateBuildDate + "-" + newUpdateBuildTime + ".zip") && updateTools()) {
             Updater.dismiss();
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             final AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+            final AlertDialog.Builder builder5 = new AlertDialog.Builder(this);
             builder.setTitle("Update Ready");
             builder.setMessage("A new update (" + newUpdateBuildDate + ") is ready to be installed, please make sure you have the backup of the recovery if anything goes wrong. Do you want to flash the recovery?");
             builder.setCancelable(false);
@@ -267,49 +267,59 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    // Backup Recovery
                     if (!(sudo("dd if=/dev/block/bootdevice/by-name/recovery of=" + path + "/recovery-backup.img"))) {
-                        builder2.setTitle("Failed to Backup current Recovery Image");
-                        builder2.setMessage("Issue encountered while backing up current image");
-                        builder2.setCancelable(true);
-                        builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                           @Override
+                        builder5.setTitle("Backup Failed");
+                        builder5.setMessage("Failed to backup current recovery. Do you want to Proceed without backup?");
+                        builder5.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                recovery_flashable = true;
+                                // Flash recovery
+
+                                if (sudo("dd if=" + path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/TWRP/recovery.img of=/dev/block/bootdevice/by-name/recovery")) {
+                                    builder2.setTitle("Updated Successfully");
+                                    builder2.setMessage("PBRP succussfully updated. Do you want to reboot to recovery now?");
+                                    builder2.setCancelable(false);
+                                    builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            sudo("reboot recovery");
+                                        }
+                                    });
+
+                                    builder2.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Toast.makeText(getApplicationContext(), "Update will be completed only if it will be rebooted to recovery.", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+
+                                    builder2.show();
+
+                                } else {
+                                    builder2.setTitle("Update Failed");
+                                    builder2.setMessage("There was some problem installing the recovery. Please send log report to the developers @pbrpcom via telegram.");
+                                    builder2.setCancelable(true);
+                                    builder2.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // nothing
+                                        }
+                                    });
+                                    builder2.show();
+                                }
                             }
-                        }
+                        });
+
+                        builder5.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getApplicationContext(), "Update Aborted by user.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        builder5.show();
                     }
-                    if (recovery_flashable && sudo("dd if=" + path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/TWRP/recovery.img of=/dev/block/bootdevice/by-name/recovery")) {
-                        builder2.setTitle("Updated Successfully");
-                        builder2.setMessage("PBRP succussfully updated. Do you want to reboot to recovery now?");
-                        builder2.setCancelable(false);
-                        builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                sudo("reboot recovery");
-                            }
-                        });
 
-                        builder2.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getApplicationContext(), "Update will be completed only if it will be rebooted to recovery.", Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                        builder2.show();
-
-                    } else {
-                        builder2.setTitle("Update Failed");
-                        builder2.setMessage("There was some problem installing the reovery. Please send log report to the developers @pbrpcom via telegram.");
-                        builder2.setCancelable(true);
-                        builder2.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // nothing
-                            }
-                        });
-                        builder2.show();
-                    }
                 }
             });
 
@@ -385,8 +395,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private Boolean installPBRP() {
-        // TODO: Install Scripts
+    private Boolean updateTools() {
+        // TODO: update tools to PBRP folder
 
         return true;
     }
