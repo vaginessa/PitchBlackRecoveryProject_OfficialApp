@@ -42,6 +42,10 @@ import org.json.simple.parser.ParseException;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -65,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     final static String buildFile = "pbrp.info";
     private int root = -1;
 
-    private final String repoBranch = "test";
+    private final String repoBranch = "pb";
     private String latestPbrpVersion = "2.9.0";
     private int STORAGE_PERMISSION_CODE = 1;
 
@@ -508,6 +512,8 @@ public class MainActivity extends AppCompatActivity {
 
     protected int checkUpdate(String[] input, String src) throws ParseException, IOException {
 
+        Log.v("T4", Arrays.toString(input));
+        Log.v("T6", src);
         JSONParser parser = new JSONParser();
         Reader reader = null;
 
@@ -523,23 +529,27 @@ public class MainActivity extends AppCompatActivity {
                 // Up to Date
                 return 1;
             } else {
+                Log.v("T1", release.get(input[0]).toString().split("-")[0]);
+                Log.v("T2", input[1]);
                 // TODO Fix this
-                int mon[] = new int[2], date[] = new int[2], yr[] = new int[2];
-                yr[0] = Integer.parseInt(input[1].substring(0, 4));
-                mon[0] = Integer.parseInt(input[1].substring(4, 6));
-                date[0] = Integer.parseInt(input[1].substring(6));
-                yr[1] = Integer.parseInt(release.get(input[0]).toString().split("-")[0].substring(0, 4));
-                mon[1] = Integer.parseInt(release.get(input[0]).toString().split("-")[0].substring(4, 6));
-                date[1] = Integer.parseInt(release.get(input[0]).toString().split("-")[0].substring(6));
-                if (yr[1] >= yr[0])
-                    if (mon[1] >= mon[0])
-                        if (date[1] > date[0] || mon[1] > mon[0] || yr[1] > yr[0]) {
-                            // Update available
-                            this.newUpdateBuildDate = release.get(input[0]).toString().split("-")[0];
-                            this.newUpdateBuildTime = release.get(input[0]).toString().split("-")[1];
-                            return 0;
-                        }
-                return 1;
+                SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
+
+                try {
+                    Date update = dateTimeFormat.parse(release.get(input[0]).toString().split("-")[0]);
+                    Date current = dateTimeFormat.parse(input[1]);
+
+                    if (update.after(current)) {
+                        // Update available
+                        this.newUpdateBuildDate = release.get(input[0]).toString().split("-")[0];
+                        this.newUpdateBuildTime = release.get(input[0]).toString().split("-")[1];
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                } catch (java.text.ParseException e) {
+                    e.printStackTrace();
+                }
+                return -1;
             }
 
         } else {
