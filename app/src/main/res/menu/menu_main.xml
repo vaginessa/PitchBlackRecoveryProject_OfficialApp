@@ -3,6 +3,7 @@
     tools:showIn="navigation_view">
     <item android:title="@string/off">
         <menu>
+            <!-- TODO: Bringup devices
             <item
                 android:id="@+id/xiaomi"
                 android:icon="@drawable/ic_phone_support"
@@ -10,7 +11,7 @@
             <item
                 android:id="@+id/lyf"
                 android:icon="@drawable/ic_phone_support"
-                android:title="@string/lyf" />
+                android:title="@string/lyf" />-->
         </menu>
     </item>
 </menu>
