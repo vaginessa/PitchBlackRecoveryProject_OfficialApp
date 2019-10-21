@@ -464,13 +464,14 @@ public class MainActivity extends AppCompatActivity {
                     pbReleasesRaw += s;
                 }
 
+                return 1;
             } catch (Exception e) {
                 setMessage("Failed to connect to the server,\nCheck your internet connection and try again");
                 Log.e("PBRP: ", "FAILED TO CONNECT TO SERVER");
                 e.printStackTrace();
+                
                 return 0;
             }
-            return 1;
         }
 
         @Override
