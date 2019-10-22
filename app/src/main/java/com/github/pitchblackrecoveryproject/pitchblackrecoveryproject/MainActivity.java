@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     final static String buildFile = "pbrp.info";
     private int root = -1;
 
-    private final String repoBranch = "pb";
+    private final String repoBranch = "test";
     private String latestPbrpVersion = "2.9.0";
     private int STORAGE_PERMISSION_CODE = 1;
 
@@ -254,11 +254,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void update() {
         // TODO: unzip and flash recovery and update PBRP folders...
-        final ProgressDialog Updater = new ProgressDialog(this);
+        final ProgressDialog Updater = new ProgressDialog(MainActivity.this);
         Updater.setTitle("Initializing Update");
         Updater.setMessage("Preparing to update...\nPlease wait...");
+        Updater.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        Updater.setCancelable(false);
         Updater.show();
-
         if (unpackZip(path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/", newUpdateBuildDate + "-" + newUpdateBuildTime + ".zip") && updateTools()) {
             Updater.dismiss();
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -272,15 +273,24 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Backup Recovery
+                    Updater.setTitle("Backup in progress");
+                    Updater.setMessage("Please wait, while we are taking backup of your recovery before installing...");
+                    Updater.show();
                     if (!(sudo("dd if=/dev/block/bootdevice/by-name/recovery of=" + path + "/recovery-backup.img"))) {
+                        Updater.dismiss();
+                        Updater.setTitle("Flashing recovery");
+                        Updater.setMessage("Flashing new update to your device, please wait...");
+
                         builder5.setTitle("Backup Failed");
                         builder5.setMessage("Failed to backup current recovery. Do you want to Proceed without backup?");
                         builder5.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // Flash recovery
 
+                                // Flash recovery
+                                Updater.show();
                                 if (sudo("dd if=" + path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/TWRP/recovery.img of=/dev/block/bootdevice/by-name/recovery")) {
+                                    Updater.dismiss();
                                     builder2.setTitle("Updated Successfully");
                                     builder2.setMessage("PBRP succussfully updated. Do you want to reboot to recovery now?");
                                     builder2.setCancelable(false);
@@ -301,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
                                     builder2.show();
 
                                 } else {
+                                    Updater.dismiss();
                                     builder2.setTitle("Update Failed");
                                     builder2.setMessage("There was some problem installing the recovery. Please send log report to the developers @pbrpcom via telegram.");
                                     builder2.setCancelable(true);
@@ -322,8 +333,49 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         builder5.show();
-                    }
+                    } else {
+                        Updater.dismiss();
+                        Updater.setTitle("Flashing recovery");
+                        Updater.setMessage("Flashing new update to your device, please wait...");
 
+                        // Flash recovery
+                        Updater.show();
+                        if (sudo("dd if=" + path + "/" + newUpdateBuildDate + "-" + newUpdateBuildTime + "/TWRP/recovery.img of=/dev/block/bootdevice/by-name/recovery")) {
+                            Updater.dismiss();
+                            builder2.setTitle("Updated Successfully");
+                            builder2.setMessage("PBRP succussfully updated. Do you want to reboot to recovery now?");
+                            builder2.setCancelable(false);
+                            builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    sudo("reboot recovery");
+                                }
+                            });
+
+                            builder2.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(getApplicationContext(), "Update will be completed only if it will be rebooted to recovery.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+                            builder2.show();
+
+                        } else {
+                            Updater.dismiss();
+                            builder2.setTitle("Update Failed");
+                            builder2.setMessage("There was some problem installing the recovery. Please send log report to the developers @pbrpcom via telegram.");
+                            builder2.setCancelable(true);
+                            builder2.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // nothing
+                                }
+                            });
+                            builder2.show();
+
+                        }
+                    }
                 }
             });
 
@@ -469,7 +521,7 @@ public class MainActivity extends AppCompatActivity {
                 setMessage("Failed to connect to the server,\nCheck your internet connection and try again");
                 Log.e("PBRP: ", "FAILED TO CONNECT TO SERVER");
                 e.printStackTrace();
-                
+
                 return 0;
             }
         }
