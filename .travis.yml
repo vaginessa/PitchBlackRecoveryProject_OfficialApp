@@ -1,0 +1,70 @@
+os: linux
+
+dist: xenial
+
+language: android
+
+java: openjdk8
+
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-28.0.3 # found in app/gradle requirement
+    - android-27 # found in app/gradle requirement
+
+sudo: required
+
+git:
+  depth: 1
+
+addons:
+  apt:
+    update:
+    - true
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+before_install:
+  - git clone https://github.com/PitchBlackRecoveryProject/PitchBlackRecoveryProject_OfficialApp ${TRAVIS_BUILD_DIR}/PBRP_App/
+  - cd ${TRAVIS_BUILD_DIR}/PBRP_App/
+  - chmod +x gradlew # Give gradlew execute authority
+
+install: true
+
+script:
+  - "travis_wait 30 sleep 1800 &"
+  - cd ${TRAVIS_BUILD_DIR}/PBRP_App/
+  - ./gradlew build --scan
+
+before_deploy:
+  - cd ${TRAVIS_BUILD_DIR}/PBRP_App/
+  # Make seperate release folder and copy necessary files there
+  - mkdir GHRelease
+  # Copy both Debug and Release APK in the folder
+  - cp -v app/build/outputs/apk/{debug,release}/*.apk GHRelease/
+  # Upload the lint-result.html in transfer.sh for now
+  - curl -s --upload-file app/build/reports/lint-results.html https://transfer.sh/ && echo ""
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key: "$GITHUB_TOKEN"
+  file_glob: true
+  file: ${TRAVIS_BUILD_DIR}/PBRP_App/GHRelease/*.apk
+  on:
+    tags: false # If want tagged build, create tag in "before_deploy" step and set this to "true"
+    branch: master
+
+branches:
+  except:
+    - /^(?i:untagged)-.*$/
+  only:
+    - master
