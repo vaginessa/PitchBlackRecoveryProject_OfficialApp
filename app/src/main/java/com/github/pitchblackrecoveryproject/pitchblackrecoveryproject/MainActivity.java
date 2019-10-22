@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     final static String buildFile = "pbrp.info";
     private int root = -1;
 
-    private final String repoBranch = "test";
+    private final String repoBranch = "pb";
     private String latestPbrpVersion = "2.9.0";
     private int STORAGE_PERMISSION_CODE = 1;
 
